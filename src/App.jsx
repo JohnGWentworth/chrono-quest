@@ -3,35 +3,11 @@ import { Share2, HelpCircle, Calendar, Trophy, ArrowUp, ArrowDown, Check, X, Set
 
 // --- DATA SOURCE CONFIGURATION ---
 
-// 1. FOR LOCAL USE (When you run this on your computer):
-//    Uncomment the line below. Make sure 'history_data.json' is in the same folder.
-import FULL_YEAR_DATA from './history_data.json'; 
+// 1. UNCOMMENT the line below when running on your computer:
+import FULL_YEAR_DATA from './history_data.json';
 
-// 2. FOR PREVIEW ONLY (So the app works right here):
-const SAMPLE_DATA = [
-  {
-    "id": "01-01",
-    "targetYear": 1863,
-    "clue": "Abraham Lincoln issues a proclamation declaring that all persons held as slaves within the rebellious states are 'henceforward shall be free.'",
-    "category": "Civil Rights",
-    "funFact": "The proclamation didn't actually free all slaves immediately—only those in states not under Union control.",
-    "articleTitle": "The Emancipation Proclamation",
-    "articleContent": "On January 1, 1863, approaching the third year of the bloody Civil War, President Abraham Lincoln issued the Emancipation Proclamation. It fundamentally transformed the character of the war."
-  },
-   {
-    "id": "10-24", // Example date for testing
-    "targetYear": 1945,
-    "clue": "The United Nations Charter enters into force, officially establishing the UN.",
-    "category": "Politics",
-    "funFact": "The term 'United Nations' was coined by Franklin D. Roosevelt during WWII to describe the Allied countries.",
-    "articleTitle": "United Nations Day",
-    "articleContent": "On October 24, 1945, the UN was officially born after a majority of signatories ratified the charter. Founded to prevent another world war, the organization replaced the ineffective League of Nations."
-  }
-];
-
-// 3. DATA SWITCHER
-//    Change 'SAMPLE_DATA' to 'FULL_YEAR_DATA' when running locally.
-const GAME_DATA_SOURCE = Full_Year_DATA; 
+// 2. DELETE this placeholder line below (it's only here to prevent the chat preview from crashing):
+//const FULL_YEAR_DATA = []; 
 
 const MAX_GUESSES = 6;
 
@@ -60,10 +36,19 @@ const App = () => {
     const dateKey = formatDateKey(simulatedDate);
     
     // 2. Find it in your JSON
-    const found = GAME_DATA_SOURCE.find(p => p.id === dateKey);
+    // Safety check: ensures data exists before trying to find the date
+    const found = FULL_YEAR_DATA.length > 0 ? FULL_YEAR_DATA.find(p => p.id === dateKey) : null;
     
     // 3. Fallback if date not found (defaults to the first entry to prevent crashing)
-    return found || GAME_DATA_SOURCE[0];
+    return found || (FULL_YEAR_DATA.length > 0 ? FULL_YEAR_DATA[0] : { 
+        // Emergency fallback if JSON fails to load entirely
+        targetYear: 2024, 
+        clue: "Loading data...", 
+        category: "System", 
+        funFact: "Data file not loaded.", 
+        articleTitle: "Error", 
+        articleContent: "Please ensure history_data.json is correctly imported." 
+    });
   }, [simulatedDate]);
 
   // Reset game when the puzzle changes
@@ -159,28 +144,19 @@ const App = () => {
       setShareButtonText('Copied!');
     } catch (err) {
       // 2. Fallback mechanism for restricted environments (like iframes or older browsers)
-      // This works by creating a hidden text box, selecting it, and running the "copy" command.
       try {
         const textArea = document.createElement("textarea");
         textArea.value = resultText;
-        
-        // Ensure it's not visible but part of the DOM
         textArea.style.position = "fixed";
         textArea.style.left = "-9999px";
         textArea.style.top = "0";
         document.body.appendChild(textArea);
-        
         textArea.focus();
         textArea.select();
-        
         const successful = document.execCommand('copy');
         document.body.removeChild(textArea);
-        
-        if (successful) {
-           setShareButtonText('Copied!');
-        } else {
-           setShareButtonText('Error');
-        }
+        if (successful) setShareButtonText('Copied!');
+        else setShareButtonText('Error');
       } catch (fallbackErr) {
         console.error('Copy failed', fallbackErr);
         setShareButtonText('Error');
