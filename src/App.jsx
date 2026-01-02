@@ -5,7 +5,7 @@ import { Share2, HelpCircle, Calendar, Trophy, ArrowUp, ArrowDown, Check, X, Set
 
 // 1. FOR LOCAL USE (When you run this on your computer):
 //    Uncomment the line below. Make sure 'history_data.json' is in the same folder.
-// import FULL_YEAR_DATA from './history_data.json'; 
+import FULL_YEAR_DATA from './history_data.json'; 
 
 // 2. FOR PREVIEW ONLY (So the app works right here):
 const SAMPLE_DATA = [
@@ -31,7 +31,7 @@ const SAMPLE_DATA = [
 
 // 3. DATA SWITCHER
 //    Change 'SAMPLE_DATA' to 'FULL_YEAR_DATA' when running locally.
-const GAME_DATA_SOURCE = SAMPLE_DATA; 
+const GAME_DATA_SOURCE = Full_Year_DATA; 
 
 const MAX_GUESSES = 6;
 
